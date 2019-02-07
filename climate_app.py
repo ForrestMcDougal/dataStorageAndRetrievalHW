@@ -17,6 +17,7 @@ Station = Base.classes.station
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def welcome():
     """List all available api routes."""
@@ -30,11 +31,27 @@ def welcome():
     )
 
 
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+    precipitation_session = Session(engine)
+
+    query = (Measurement.date, func.avg(Measurement.prcp))
+
+    prcp = precipitation_session.query(*query). \
+        group_by(Measurement.date).all()
+
+    prcp_dict = dict()
+    for p in prcp:
+        prcp_dict[p[0]] = p[1]
+
+    return jsonify(prcp_dict)
+
+
 @app.route("/api/v1.0/stations")
 def stations():
-    session = Session(engine)
+    stations_session = Session(engine)
     query = (Measurement.station, )
-    station_info = session.query(*query).\
+    station_info = stations_session.query(*query).\
         order_by(func.count(Measurement.station).desc()).\
         group_by(Measurement.station).all()
     
@@ -45,8 +62,11 @@ def stations():
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    session = Session(engine)
-    last_day = session.query(Measurement.date).\
+    tobs_session = Session(engine)
+
+    query = (Measurement.date, )
+
+    last_day = tobs_session.query(*query).\
         order_by(Measurement.date.desc()).first()[0]
     
     last_day_dt = dt.datetime.strptime(last_day, '%Y-%m-%d').date()
@@ -56,7 +76,7 @@ def tobs():
     query = (Measurement.date, func.min(Measurement.tobs),
              func.avg(Measurement.tobs), func.max(Measurement.tobs))
 
-    results = session.query(*query).\
+    results = tobs_session.query(*query).\
         filter(Measurement.date > one_year_ago_str).\
         order_by(Measurement.date).\
         group_by(Measurement.date).all()
@@ -75,10 +95,12 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def temps(start):
-    session = Session(engine)
+    temps_session = Session(engine)
+
     query = (func.min(Measurement.tobs), func.avg(Measurement.tobs),
              func.max(Measurement.tobs))
-    all_temps =  session.query(*query).\
+
+    all_temps =  temps_session.query(*query).\
         filter(Measurement.date >= start).all()
 
     temps_list = list(np.ravel(all_temps))
@@ -88,10 +110,12 @@ def temps(start):
 
 @app.route("/api/v1.0/<start>/<end>")
 def temp_range(start, end):
-    session = Session(engine)
+    temp_range_session = Session(engine)
+
     query = (func.min(Measurement.tobs), func.avg(Measurement.tobs),
              func.max(Measurement.tobs))
-    temps_range = session.query(*query).\
+             
+    temps_range = temp_range_session.query(*query).\
         filter(Measurement.date >= start, Measurement.date <= end).all()
 
     temp_range_list = list(np.ravel(temps_range))
