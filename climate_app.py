@@ -43,6 +43,36 @@ def stations():
     return jsonify(all_stations)
 
 
+@app.route("/api/v1.0/tobs")
+def tobs():
+    session = Session(engine)
+    last_day = session.query(Measurement.date).\
+        order_by(Measurement.date.desc()).first()[0]
+    
+    last_day_dt = dt.datetime.strptime(last_day, '%Y-%m-%d').date()
+    one_year_ago = last_day_dt - dt.timedelta(days=365)
+    one_year_ago_str = str(one_year_ago)
+
+    query = (Measurement.date, func.min(Measurement.tobs),
+             func.avg(Measurement.tobs), func.max(Measurement.tobs))
+
+    results = session.query(*query).\
+        filter(Measurement.date > one_year_ago_str).\
+        order_by(Measurement.date).\
+        group_by(Measurement.date).all()
+    
+    tobs = []
+    for result in results:
+        temp_tobs = dict()
+        temp_tobs['date'] = result[0]
+        temp_tobs['min_temp'] = result[1]
+        temp_tobs['avg_temp'] = round(result[2])
+        temp_tobs['max_temp'] = result[3]
+        tobs.append(temp_tobs)
+
+    return jsonify(tobs)
+
+
 @app.route("/api/v1.0/<start>")
 def temps(start):
     session = Session(engine)
