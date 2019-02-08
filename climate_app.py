@@ -1,7 +1,8 @@
 import datetime as dt
 import numpy as np
+import os
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -15,20 +16,18 @@ Base.prepare(engine, reflect=True)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
+IMAGE_FOLDER = os.path.join('static', 'images')
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = IMAGE_FOLDER
 
 
 @app.route("/")
+@app.route("/index")
 def welcome():
     """List all available api routes."""
-    return (
-        f"Available Routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start> <br/>"
-        f"/api/v1.0/<start>/<end> <br/>"
-    )
+    full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'surfs-up.jpeg')
+    return render_template("index.html", user_image=full_filename)
 
 
 @app.route("/api/v1.0/precipitation")
