@@ -9,20 +9,20 @@
 <body>
     <h1>Welcome to the Hawaii Climate App<br/></h1>
     <img src="{{ user_image }}" alt="surfer riding a wave" width="50%" height="auto" style="display: block; margin-left: auto; margin-right: auto;">
-    <h2>Available Routes:<br/></h2>
-    <div>
-        <a href="http://127.0.0.1:5000/api/v1.0/precipitation">Precipitation by date</a> /api/v1.0/precipitation
-    </div>
-    <div>
-        <a href="http://127.0.0.1:5000/api/v1.0/stations">List of all stations</a> /api/v1.0/stations
-    </div>
-    <div>
-        <a href="http://127.0.0.1:5000/api/v1.0/tobs">Temperature observations for the past year</a> /api/v1.0/tobs
-    </div>
-    <div>
-        If you want to find the minimun, average and maximum temperatures for a given range, you can use the endpoints
-        /api/v1.0/(start) or /api/v1.0/(start)/(end) with format YYYY-MM-DD.
-    </div>
+    <h2>Available Routes:</h2>
+    <h3>Precipitation</h3>
+    <h4>/api/v1.0/precipitation</h4>
+    <p style="text-align: justify; width: 50%; margin: 0 auto;">JSON of average precipitation for each day. <a href="http://127.0.0.1:5000/api/v1.0/precipitation">click here</a></p>
+    <h3>Stations</h3>
+    <h4>/api/v1.0/stations</h4>
+    <p style="text-align: justify; width: 50%; margin: 0 auto;">JSON list of all station IDs. <a href="http://127.0.0.1:5000/api/v1.0/stations">click here</a></p>
+    <h3>Temperature</h3>
+    <h4>/api/v1.0/tobs</h4>
+    <p style="text-align: justify; width: 50%; margin: 0 auto;">JSON of the minimum, average, and maximum temperature for the last year in the dataset. <a href="http://127.0.0.1:5000/api/v1.0/tobs">click here</a></p>
+    <h3>Temperature Range</h3>
+    <h4>/api/v1.0/(start)</h4>
+    <h4>/api/v1.0/(start)/(end)</h4>
+    <p style="text-align: justify; width: 50%; margin: 0 auto;">JSON of the minimum, average, and maximum temperature for a certain date range. Dates are passed in YYYY-MM-DD format. Dates range from 2010-01-01 to 2017-08-23. Start endpoint gives data past that date (inclusive) and start/end gives data within that range (inclusive). Link coming soon.</p>
 </body>
 
 </html>
